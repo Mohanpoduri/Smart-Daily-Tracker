@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Hero -->
+<section class="hero-section text-center">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-graph-up-arrow text-info"></i> Productivity Analysis
+    </h1>
+    <p class="lead text-muted">Your detailed performance report and insights</p>
+</section>
+
+<!-- Overview Stats -->
+<section class="mb-4">
+    <div class="row g-3">
+        <div class="col-6 col-lg-3">
+            <div class="stat-card stat-total">
+                <div class="stat-icon"><i class="bi bi-list-task"></i></div>
+                <div class="stat-number">{{ total_tasks }}</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card stat-completed">
+                <div class="stat-icon"><i class="bi bi-check2-all"></i></div>
+                <div class="stat-number">{{ completed_tasks }}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card stat-pending-card">
+                <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+                <div class="stat-number">{{ pending_tasks }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card stat-productivity">
+                <div class="stat-icon"><i class="bi bi-speedometer2"></i></div>
+                <div class="stat-number">{{ productivity }}%</div>
+                <div class="stat-label">Productivity</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Charts Row -->
+<section class="mb-4">
+    <div class="row g-4">
+        <div class="col-12 col-md-6">
+            <div class="card analysis-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Task Completion</h5>
+                    <div class="chart-container"><canvas id="completionChart"></canvas></div>
+                    <div class="text-center mt-3">
+                        <span class="badge bg-success me-1">✅ {{ completed_tasks }} Done</span>
+                        <span class="badge bg-warning text-dark">⏳ {{ pending_tasks }} Pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="card analysis-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-fill text-info me-2"></i>Priority Breakdown</h5>
+                    <div class="chart-container"><canvas id="priorityChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Priority Details -->
+<section class="mb-4">
+    <div class="card analysis-card">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-4"><i class="bi bi-bullseye text-danger me-2"></i>Priority Progress</h5>
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <div class="priority-report-card priority-report-high">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold">🔴 High</span>
+                            <span class="badge bg-danger">{{ high_done }}/{{ high_total }}</span>
+                        </div>
+                        <div class="progress" style="height:10px;">
+                            <div class="progress-bar bg-danger" style="width:{{ (high_done/high_total*100)|round(1) if high_total else 0 }}%"></div>
+                        </div>
+                        <small class="text-muted mt-1 d-block">{{ (high_done/high_total*100)|round(0)|int if high_total else 0 }}% completed</small>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="priority-report-card priority-report-medium">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold">🟡 Medium</span>
+                            <span class="badge bg-warning text-dark">{{ medium_done }}/{{ medium_total }}</span>
+                        </div>
+                        <div class="progress" style="height:10px;">
+                            <div class="progress-bar bg-warning" style="width:{{ (medium_done/medium_total*100)|round(1) if medium_total else 0 }}%"></div>
+                        </div>
+                        <small class="text-muted mt-1 d-block">{{ (medium_done/medium_total*100)|round(0)|int if medium_total else 0 }}% completed</small>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="priority-report-card priority-report-low">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold">🟢 Low</span>
+                            <span class="badge bg-success">{{ low_done }}/{{ low_total }}</span>
+                        </div>
+                        <div class="progress" style="height:10px;">
+                            <div class="progress-bar bg-success" style="width:{{ (low_done/low_total*100)|round(1) if low_total else 0 }}%"></div>
+                        </div>
+                        <small class="text-muted mt-1 d-block">{{ (low_done/low_total*100)|round(0)|int if low_total else 0 }}% completed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Routine Analysis -->
+<section class="mb-4">
+    <div class="card analysis-card">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-calendar2-check text-success me-2"></i>Daily Routine Report</h5>
+            {% if total_routines > 0 %}
+            <div class="row align-items-center">
+                <div class="col-12 col-md-6">
+                    <div class="chart-container-sm"><canvas id="routineChart"></canvas></div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="routine-stats-list">
+                        <div class="routine-stat-item"><i class="bi bi-journal-text text-info me-2"></i>Total: <strong>{{ total_routines }}</strong></div>
+                        <div class="routine-stat-item"><i class="bi bi-check-circle-fill text-success me-2"></i>Done: <strong>{{ completed_routines }}</strong></div>
+                        <div class="routine-stat-item"><i class="bi bi-clock-fill text-warning me-2"></i>Remaining: <strong>{{ total_routines - completed_routines }}</strong></div>
+                        <div class="routine-stat-item"><i class="bi bi-trophy-fill text-primary me-2"></i>Rate: <strong>{{ (completed_routines/total_routines*100)|round(1) if total_routines else 0 }}%</strong></div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-3">
+                <i class="bi bi-emoji-neutral display-4 text-muted d-block mb-2" style="opacity:.3"></i>
+                <p class="text-muted">No routines today. <a href="/routine" class="fw-semibold">Add some here →</a></p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Reminders -->
+<section class="mb-4">
+    <div class="card analysis-card">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-bell-fill text-warning me-2"></i>Active Reminders</h5>
+            {% if reminders|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover reminder-table">
+                    <thead><tr><th>Task</th><th>Priority</th><th>Reminder</th><th>Alarm</th></tr></thead>
+                    <tbody>
+                        {% for t in reminders %}
+                        <tr>
+                            <td class="fw-semibold">{{ t['task'] }}</td>
+                            <td><span class="badge priority-{{ t['priority']|lower }}">{{ t['priority'] }}</span></td>
+                            <td><i class="bi bi-alarm me-1"></i>{{ t['reminder_time'] }}</td>
+                            <td>
+                                {% if t['priority']=='High' %}
+                                <span class="badge bg-danger"><i class="bi bi-volume-up-fill me-1"></i>Alarm</span>
+                                {% else %}
+                                <span class="badge bg-info text-white"><i class="bi bi-bell me-1"></i>Notify</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-3">
+                <i class="bi bi-bell-slash display-4 text-muted d-block mb-2" style="opacity:.3"></i>
+                <p class="text-muted">No active reminders.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Productivity Summary -->
+<section class="mb-5">
+    <div class="card analysis-card productivity-summary-card">
+        <div class="card-body p-4 text-center">
+            <h5 class="fw-bold mb-3"><i class="bi bi-trophy-fill text-warning me-2"></i>Productivity Score</h5>
+            <div class="productivity-gauge mb-3">
+                <div class="gauge-circle" data-score="{{ productivity }}">
+                    <span class="gauge-value">{{ productivity }}%</span>
+                </div>
+            </div>
+            <h4 class="fw-bold mb-2">
+                {% if productivity >= 80 %}🏆 Excellent! Productivity champion!
+                {% elif productivity >= 60 %}💪 Great job! Keep the momentum!
+                {% elif productivity >= 40 %}📈 Good progress! Push harder!
+                {% elif productivity > 0 %}🌱 Getting started. You've got this!
+                {% else %}🎯 Complete tasks to see your score!
+                {% endif %}
+            </h4>
+            <p class="text-muted">{{ completed_tasks + completed_routines }} of {{ total_tasks + total_routines }} items done today.</p>
+            <div class="mt-3 d-flex gap-2 justify-content-center flex-wrap">
+                <a href="/" class="btn btn-primary"><i class="bi bi-list-task me-1"></i>Go to Tasks</a>
+                <a href="/routine" class="btn btn-info text-white"><i class="bi bi-journal-check me-1"></i>Go to Routine</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Charts -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var chartFont = { family: 'Inter', weight: '600' };
+
+    // Completion Doughnut
+    var c1 = document.getElementById('completionChart');
+    if (c1) new Chart(c1.getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: ['Completed','Pending'],
+                datasets: [{ data: [{{ completed_tasks }},{{ pending_tasks }}],
+                             backgroundColor: ['#22c55e','#f59e0b'], borderWidth: 3,
+                             borderColor: '#fff', hoverOffset: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%',
+                   plugins: { legend: { position: 'bottom', labels: { font: chartFont, padding: 16 }}}}
+    });
+
+    // Priority Bar
+    var c2 = document.getElementById('priorityChart');
+    if (c2) new Chart(c2.getContext('2d'), {
+        type: 'bar',
+        data: { labels: ['High','Medium','Low'],
+                datasets: [
+                    { label: 'Total',     data: [{{ high_total }},{{ medium_total }},{{ low_total }}],
+                      backgroundColor: ['rgba(239,68,68,.2)','rgba(245,158,11,.2)','rgba(34,197,94,.2)'],
+                      borderColor: ['#ef4444','#f59e0b','#22c55e'], borderWidth: 2, borderRadius: 6 },
+                    { label: 'Completed', data: [{{ high_done }},{{ medium_done }},{{ low_done }}],
+                      backgroundColor: ['#ef4444','#f59e0b','#22c55e'],
+                      borderColor: ['#ef4444','#f59e0b','#22c55e'], borderWidth: 2, borderRadius: 6 }
+                ] },
+        options: { responsive: true, maintainAspectRatio: false,
+                   scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: chartFont }, grid: { color: 'rgba(0,0,0,.05)' }},
+                             x: { ticks: { font: chartFont }, grid: { display: false }}},
+                   plugins: { legend: { position: 'bottom', labels: { font: chartFont, padding: 16 }}}}
+    });
+
+    // Routine Doughnut
+    var c3 = document.getElementById('routineChart');
+    if (c3) new Chart(c3.getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: ['Done','Remaining'],
+                datasets: [{ data: [{{ completed_routines }},{{ total_routines - completed_routines }}],
+                             backgroundColor: ['#06b6d4','#e2e8f0'], borderWidth: 3,
+                             borderColor: '#fff', hoverOffset: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%',
+                   plugins: { legend: { position: 'bottom', labels: { font: chartFont, padding: 16 }}}}
+    });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Hero -->
+<section class="hero-section text-center">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-lightning-charge-fill text-warning"></i> Task Manager
+    </h1>
+    <p class="lead text-muted">Add, prioritize, and track your tasks with reminders</p>
+</section>
+
+<!-- Flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}{% for cat, msg in messages %}
+<div class="alert alert-{{ cat }} alert-dismissible fade show flash-alert" role="alert">
+    <i class="bi {% if cat == 'success' %}bi-check-circle-fill{% elif cat == 'danger' %}bi-exclamation-triangle-fill{% else %}bi-info-circle-fill{% endif %} me-2"></i>{{ msg }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}{% endif %}{% endwith %}
+
+<!-- Stats -->
+<section class="stats-section">
+    <div class="row g-3 mb-4">
+        <div class="col-4 col-lg-2">
+            <div class="stat-card stat-total"><div class="stat-icon"><i class="bi bi-list-task"></i></div>
+                <div class="stat-number">{{ total }}</div><div class="stat-label">Total</div></div>
+        </div>
+        <div class="col-4 col-lg-2">
+            <div class="stat-card stat-completed"><div class="stat-icon"><i class="bi bi-check2-all"></i></div>
+                <div class="stat-number">{{ completed }}</div><div class="stat-label">Done</div></div>
+        </div>
+        <div class="col-4 col-lg-2">
+            <div class="stat-card stat-pending-card"><div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+                <div class="stat-number">{{ total - completed }}</div><div class="stat-label">Pending</div></div>
+        </div>
+        <div class="col-4 col-lg-2">
+            <div class="stat-card stat-high"><div class="stat-icon"><i class="bi bi-fire"></i></div>
+                <div class="stat-number">{{ high }}</div><div class="stat-label">High</div></div>
+        </div>
+        <div class="col-4 col-lg-2">
+            <div class="stat-card stat-medium"><div class="stat-icon"><i class="bi bi-exclamation-circle"></i></div>
+                <div class="stat-number">{{ medium }}</div><div class="stat-label">Medium</div></div>
+        </div>
+        <div class="col-4 col-lg-2">
+            <div class="stat-card stat-low"><div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+                <div class="stat-number">{{ low }}</div><div class="stat-label">Low</div></div>
+        </div>
+    </div>
+
+    {% if total > 0 %}
+    <div class="progress-section mb-4">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="fw-semibold text-muted">Completion Progress</span>
+            <span class="fw-semibold text-muted">{{ completed }}/{{ total }} done</span>
+        </div>
+        <div class="progress custom-progress" style="height: 14px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                 style="width: {{ (completed / total * 100)|round(1) }}%">
+                {{ (completed / total * 100)|round(0)|int }}%
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if pending_high > 0 %}
+    <div class="alert alert-danger border-0 high-alert mb-4">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-octagon-fill fs-3 me-3 pulse-icon"></i>
+            <div>
+                <strong>🚨 {{ pending_high }} High Priority Task{{ 's' if pending_high != 1 }} Pending!</strong>
+                <p class="mb-0 small">Alarms are active for tasks with reminders set.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+<!-- Add Task Form -->
+<section class="add-task-section">
+    <div class="card form-card">
+        <div class="card-body p-4">
+            <h5 class="card-title mb-3"><i class="bi bi-plus-circle-fill text-primary me-2"></i>Add New Task</h5>
+            <form id="task-form" action="/add" method="POST">
+                <div class="row g-3 align-items-end">
+                    <div class="col-12 col-md-4">
+                        <label for="task-input" class="form-label fw-semibold">Task Description</label>
+                        <input type="text" class="form-control form-control-lg" id="task-input" name="task"
+                               placeholder="What needs to be done?" autocomplete="off" maxlength="200">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label fw-semibold">Priority</label>
+                        <select class="form-select form-select-lg" name="priority" id="priority-select">
+                            <option value="High">🔴 High</option>
+                            <option value="Medium" selected>🟡 Medium</option>
+                            <option value="Low">🟢 Low</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-semibold"><i class="bi bi-bell-fill text-warning me-1"></i>Reminder</label>
+                        <input type="time" class="form-control form-control-lg" name="reminder_time">
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 add-btn" id="add-task-btn">
+                            <i class="bi bi-plus-lg me-1"></i> Add Task</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Filters -->
+<section class="filter-section mt-4">
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+        <button class="btn btn-filter active" data-filter="all"><i class="bi bi-grid-fill me-1"></i>All</button>
+        <button class="btn btn-filter btn-filter-high" data-filter="High"><i class="bi bi-fire me-1"></i>High</button>
+        <button class="btn btn-filter btn-filter-medium" data-filter="Medium"><i class="bi bi-exclamation-circle me-1"></i>Medium</button>
+        <button class="btn btn-filter btn-filter-low" data-filter="Low"><i class="bi bi-check-circle me-1"></i>Low</button>
+        <button class="btn btn-filter btn-filter-pending" data-filter="pending"><i class="bi bi-hourglass-split me-1"></i>Pending</button>
+        <button class="btn btn-filter btn-filter-done" data-filter="done"><i class="bi bi-check2-all me-1"></i>Done</button>
+    </div>
+</section>
+
+<!-- Task List -->
+<section class="task-list-section mt-4 mb-5">
+    {% if tasks|length == 0 %}
+    <div class="empty-state text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted" style="opacity:.3"></i>
+        <h4 class="text-muted mt-3">No tasks yet</h4>
+        <p class="text-muted">Add your first task above to get started! 🚀</p>
+    </div>
+    {% else %}
+    <div class="row g-3" id="task-container">
+        {% for task in tasks %}
+        <div class="col-12 col-md-6 col-lg-4 task-item"
+             data-priority="{{ task['priority'] }}"
+             data-status="{{ 'done' if task['is_completed'] else 'pending' }}">
+            <div class="card task-card task-{{ task['priority']|lower }} {% if task['is_completed'] %}task-completed{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge priority-badge priority-{{ task['priority']|lower }}">
+                            {% if task['priority']=='High' %}🔴{% elif task['priority']=='Medium' %}🟡{% else %}🟢{% endif %} {{ task['priority'] }}
+                        </span>
+                        <div class="d-flex gap-1">
+                            <a href="/toggle/{{ task['id'] }}" class="btn btn-sm btn-toggle"
+                               title="{{ 'Reopen' if task['is_completed'] else 'Complete' }}">
+                                <i class="bi {% if task['is_completed'] %}bi-arrow-counterclockwise{% else %}bi-check-lg{% endif %}"></i>
+                            </a>
+                            <a href="/delete/{{ task['id'] }}" class="btn btn-sm btn-delete"
+                               onclick="return confirm('Delete this task?');">
+                                <i class="bi bi-trash3-fill"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <h6 class="task-text mb-2 {% if task['is_completed'] %}text-decoration-line-through text-muted{% endif %}">
+                        {{ task['task'] }}
+                    </h6>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ task['created_at'] }}</small>
+                        {% if task['reminder_time'] and not task['is_completed'] %}
+                        <span class="badge reminder-badge"><i class="bi bi-bell-fill me-1"></i>{{ task['reminder_time'] }}</span>
+                        {% endif %}
+                    </div>
+                    {% if task['is_completed'] %}
+                    <div class="completed-stamp mt-2">
+                        <i class="bi bi-patch-check-fill text-success me-1"></i>
+                        <small class="text-success fw-semibold">Completed</small>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="priority-strip priority-strip-{{ task['priority']|lower }}"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+
+{% endblock %}
