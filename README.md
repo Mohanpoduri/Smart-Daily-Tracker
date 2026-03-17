@@ -1,33 +1,36 @@
-# 🗓️ Smart Daily Planner with Priority-Based Task Engine
+# 🗓️ Smart Daily Planner — PWA
 
-A full-stack web application built with **Flask** and **Bootstrap** that helps users manage their daily tasks with an intelligent priority-based sorting system.
-
----
-
-## 📋 Project Description
-
-The **Smart Daily Planner** is a task management web application designed to help users organize their daily activities efficiently. Tasks are categorized into three priority levels — **High**, **Medium**, and **Low** — and are automatically sorted to ensure the most critical tasks appear first.
-
-The application features a modern, responsive UI with real-time statistics, color-coded task cards, and smooth animations for an enhanced user experience.
+A full-stack **Progressive Web App** built with **Flask** that helps users manage daily tasks, routines, and productivity — installable on any phone or desktop.
 
 ---
 
-## ✨ Features
+## 📱 PWA Features
 
-- ✅ **Add Tasks** — Create tasks with a description and priority level
-- ✅ **Priority Sorting** — Tasks auto-sort by priority (High → Medium → Low)
-- ✅ **Delete Tasks** — Remove completed or unnecessary tasks
-- ✅ **Color-Coded Cards** — Visual priority indicators (🔴 High, 🟡 Medium, 🟢 Low)
-- ✅ **Dashboard Stats** — View total, high, medium, and low task counts
-- ✅ **Progress Bar** — Visual task distribution indicator
-- ✅ **Filter Buttons** — Filter tasks by priority (All / High / Medium / Low)
-- ✅ **Flash Messages** — Success/error notifications with auto-dismiss
-- ✅ **Form Validation** — Client-side and server-side input validation
-- ✅ **Live Clock** — Real-time clock display in the navbar
-- ✅ **Responsive Design** — Works on desktop, tablet, and mobile
-- ✅ **Smooth Animations** — Fade-in effects and hover interactions
-- ✅ **Timestamp Display** — Shows when each task was created
-- ✅ **Empty State** — Friendly message when no tasks exist
+- 📲 **Install on Phone** — Add to Home Screen for a native app-like experience
+- 🔌 **Offline Support** — Service Worker caches the app shell for offline use
+- ⚡ **Fast Loading** — Static assets cached locally for instant load
+- 📡 **Offline Indicator** — Shows a banner when you lose connectivity
+- 🔔 **Task Reminders** — Alarm overlay with shake animation for due tasks
+
+---
+
+## ✨ Core Features
+
+| Tab | Features |
+|-----|----------|
+| **📋 Tasks** | Add, prioritize (High/Medium/Low), toggle complete, delete, reminder alarms |
+| **🔁 Daily Routine** | Category-based routine items (Morning, Evening, Health...), checkboxes, time slots |
+| **📊 Analysis** | Productivity score gauge, priority breakdown charts, routine stats, reminder table |
+
+### Additional Features
+- ✅ Priority-based auto-sorting (High → Medium → Low)
+- ✅ Color-coded task cards with animated priority strips
+- ✅ Real-time live clock in navbar
+- ✅ Filter buttons (All / High / Medium / Low / Pending / Done)
+- ✅ Flash messages with auto-dismiss
+- ✅ Chart.js visualizations (doughnut, bar, pie)
+- ✅ Responsive design — works on all screen sizes
+- ✅ Smooth fade-in, bounce, and hover animations
 
 ---
 
@@ -35,16 +38,15 @@ The application features a modern, responsive UI with real-time statistics, colo
 
 | Technology | Purpose |
 |------------|---------|
-| **Python 3** | Backend programming language |
-| **Flask** | Web framework for routing and templating |
-| **SQLite** | Lightweight database for task storage |
-| **Jinja2** | Template engine for dynamic HTML |
-| **HTML5** | Page structure with semantic tags |
-| **CSS3** | Custom styling and animations |
-| **Bootstrap 5** | Responsive layout and UI components |
+| **Python 3 + Flask** | Backend framework & routing |
+| **SQLite** | Lightweight database |
+| **Jinja2** | Server-side templating |
+| **HTML5 + CSS3** | Structure & styling |
+| **Bootstrap 5** | Responsive UI components |
+| **Chart.js** | Data visualizations |
 | **JavaScript** | Client-side interactivity |
-| **jQuery** | DOM manipulation and effects |
-| **Bootstrap Icons** | Icon library for UI elements |
+| **Service Worker** | PWA offline caching |
+| **Web App Manifest** | PWA install capability |
 
 ---
 
@@ -52,19 +54,23 @@ The application features a modern, responsive UI with real-time statistics, colo
 
 ```
 Daily Task Tracker/
+├── app.py                          # Flask backend (routes, DB, APIs)
+├── requirements.txt                # Python dependencies
+├── .gitignore                      # Git ignore rules
+├── README.md                       # Project documentation
 │
 ├── static/
-│   ├── style.css          # Custom CSS styles
-│   ├── script.js          # JavaScript & jQuery logic
+│   ├── style.css                   # Custom CSS (all styling)
+│   ├── script.js                   # JavaScript (clock, filters, alarms)
+│   ├── manifest.json               # PWA manifest
+│   ├── service-worker.js           # Service Worker for caching
+│   └── icon-512.png                # App icon (512x512)
 │
-├── templates/
-│   ├── base.html          # Base template (layout)
-│   ├── index.html         # Main page template
-│
-├── app.py                 # Flask application (backend)
-├── database.db            # SQLite database (auto-created)
-├── requirements.txt       # Python dependencies
-├── README.md              # Project documentation
+└── templates/
+    ├── base.html                   # Base layout (navbar, footer, PWA)
+    ├── index.html                  # Tasks page
+    ├── routine.html                # Daily Routine page
+    └── analysis.html               # Analysis & Charts page
 ```
 
 ---
@@ -72,65 +78,55 @@ Daily Task Tracker/
 ## 🚀 Installation & Setup
 
 ### Prerequisites
-- Python 3.7 or higher installed
-- pip (Python package manager)
+- Python 3.7+
+- pip
 
 ### Steps
 
-1. **Clone or download** the project folder
-
-2. **Navigate** to the project directory:
+1. **Clone the repository**:
    ```bash
-   cd "Daily Task Tracker"
+   git clone https://github.com/YOUR_USERNAME/smart-daily-planner.git
+   cd smart-daily-planner
    ```
 
-3. **Install dependencies**:
+2. **Install dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Run the application**:
+3. **Run the app**:
    ```bash
    python app.py
    ```
 
-5. **Open your browser** and go to:
+4. **Open in browser**:
    ```
    http://127.0.0.1:5000
    ```
 
----
-
-## 📸 Screenshots
-
-### Dashboard View
-*Screenshot of the main dashboard with task cards and statistics*
-
-### Add Task Form
-*Screenshot of the task input form with priority selector*
-
-### Mobile Responsive View
-*Screenshot of the application on a mobile device*
+### 📲 Install as Mobile App
+1. Open the app URL on your phone's browser (Chrome recommended)
+2. Tap the **"Install"** banner that appears at the bottom
+3. Or use browser menu → **"Add to Home Screen"**
+4. The app will appear on your phone like a native app!
 
 ---
 
-## 🎯 How It Works
-
-1. **Adding a Task** — Fill in the task description, select a priority level, and click "Add Task"
-2. **Automatic Sorting** — Tasks are sorted by priority (High first, then Medium, then Low)
-3. **Filtering** — Use the filter buttons to view tasks by specific priority
-4. **Deleting a Task** — Click the trash icon on any task card to remove it
-5. **Statistics** — View real-time task counts and distribution in the stats section
-
----
-
-## 🔑 Key Routes
+## 🔑 API Routes
 
 | Route | Method | Description |
 |-------|--------|-------------|
-| `/` | GET | Home page — displays all tasks |
+| `/` | GET | Tasks page |
 | `/add` | POST | Add a new task |
-| `/delete/<id>` | GET | Delete a task by ID |
+| `/delete/<id>` | GET | Delete a task |
+| `/toggle/<id>` | GET | Toggle task completion |
+| `/routine` | GET | Daily Routine page |
+| `/add_routine` | POST | Add a routine item |
+| `/toggle_routine/<id>` | GET | Toggle routine completion |
+| `/delete_routine/<id>` | GET | Delete a routine item |
+| `/analysis` | GET | Analysis & Charts page |
+| `/api/reminders` | GET | JSON API for pending reminders |
+| `/service-worker.js` | GET | Service Worker (PWA) |
 
 ---
 
@@ -141,6 +137,18 @@ CREATE TABLE tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task TEXT NOT NULL,
     priority TEXT NOT NULL,
+    reminder_time TEXT,
+    is_completed INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE routines (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    routine TEXT NOT NULL,
+    category TEXT DEFAULT 'General',
+    routine_time TEXT,
+    is_completed INTEGER DEFAULT 0,
+    date TEXT DEFAULT (date('now')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
@@ -149,9 +157,7 @@ CREATE TABLE tasks (
 
 ## 👨‍💻 Author
 
-Built as an academic project to demonstrate full-stack web development skills using Flask and modern frontend technologies.
-
----
+Built as an academic project demonstrating full-stack web development with PWA capabilities.
 
 ## 📄 License
 
